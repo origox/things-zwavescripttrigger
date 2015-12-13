@@ -12,22 +12,22 @@
 // ----------------------------------------------------------------------------
 // --- Class definition, inheritance and setup
 // ----------------------------------------------------------------------------
-function MqttMapper (id, controller) {
+function things-MqttMapper (id, controller) {
     // Call superconstructor first (AutomationModule)
-    MqttMapper.super_.call(this, id, controller);
+    things-MqttMapper.super_.call(this, id, controller);
 };
 
-inherits(MqttMapper, AutomationModule);
+inherits(things-MqttMapper, AutomationModule);
 
-_module = MqttMapper;
+_module = things-MqttMapper;
 
 // ----------------------------------------------------------------------------
 // --- Module instance initialized
 // ----------------------------------------------------------------------------
 
-MqttMapper.prototype.init = function (config) {
+things-zwavescripttrigger.prototype.init = function (config) {
     // Call superclass' init (this will process config argument and so on)
-    MqttMapper.super_.prototype.init.call(this, config);
+    things-zwavescripttrigger.super_.prototype.init.call(this, config);
 
     // Remember "this" for detached callbacks (such as event listener callbacks)
     var self = this;
@@ -59,8 +59,8 @@ MqttMapper.prototype.init = function (config) {
     this.controller.devices.on(this.config.device, "change:metrics:level", this.handler);
 };
 
-MqttMapper.prototype.stop = function () {
-    MqttMapper.super_.prototype.stop.call(this);
+things-zwavescripttrigger.prototype.stop = function () {
+    things-zwavescripttrigger.super_.prototype.stop.call(this);
 
     this.controller.devices.off(this.config.device, "change:metrics:level", this.handler);
 };
