@@ -29,7 +29,6 @@ thingsMqttMapper.prototype.init = function (config) {
     // Call superclass' init (this will process config argument and so on)
     thingsMqttMapper.super_.prototype.init.call(this, config);
 
-    debugPrint("\nJONAS!!!!!!!!!!!!!!!!!!!!!\n");
     // Remember "this" for detached callbacks (such as event listener callbacks)
     var self = this;
 
@@ -39,13 +38,8 @@ thingsMqttMapper.prototype.init = function (config) {
 
     self.handler = function (vDev) {
 	
-	if(self.config.script) {
-            debugPrint("\nMQTT DEBUG, ID=", vDev.id + " - title:" + vDev.get("metrics:title") + " level:" + vDev.get("metrics:level") + " scale:" + vDev.get("metrics:scaleTitle") + "\n");
+            debugPrint("\nJF DEBUG, ID=", vDev.id + " - title:" + vDev.get("metrics:title") + " level:" + vDev.get("metrics:level") + " scale:" + vDev.get("metrics:scaleTitle") + "\n");
 	    try {
-		// var mycmd = "mqtt pub -t 'TOPIC' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
-		// var mycmd = "mqtt pub -t '/iotjf/evt/sensor/" + vDev.id  + "' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
-		//var ret = system("mqtt pub -t 'TOPIC' -h localhost -u 'apa' -P 'apapass' -m " + vDev.get("metrics:title") );
-		//var ret = "apa"; //system(mycmd);
 		var msg = {
 		    id: vDev.id,
 		    title: vDev.get("metrics:title"),
@@ -56,9 +50,9 @@ thingsMqttMapper.prototype.init = function (config) {
 		self.sock.send(JSON.stringify(msg));
 		
 	    } catch(err) {
-		debugPrint("Failed to execute script system call: " + err);
+		debugPrint("\nJF - Failed to execute socket send: " + err);
 	    }
-	    var storedLog = loadObject("MQTTValueLogging_" + vDev.id + "_" + self.id);
+	    var storedLog = loadObject("JFValueLogging_" + vDev.id + "_" + self.id);
             if (!storedLog) {
                 storedLog = {
                     deviceId: vDev.id,
@@ -67,43 +61,18 @@ thingsMqttMapper.prototype.init = function (config) {
                 };
             }
             storedLog.sensorData.push({"time": Date.now(), "value": vDev.get("metrics:level")});
-            saveObject("MQTTValueLogging_" + vDev.id + "_" + self.id, storedLog);
+            saveObject("JFValueLogging_" + vDev.id + "_" + self.id, storedLog);
             storedLog = null;
-        }
-    };
+      };
 
     // Setup metric update event listener
     this.controller.devices.on(this.config.device, "change:metrics:level", this.handler);
-    //this.controller.devices.on( "ZWayVDev_zway_2-0-37", "change:metrics:level", this.handler);
-
-
-    // Socket Interface
-    //var sock = new sockets.tcp()
-    /*
-    sock.onrecv = function(data) {
-	debugPrint(data.byteLength);
-    };
-
-
-      var myj = {
-
-	m: "on"
-    }
-    */
-    //sock.connect('localhost', 7777);
-
-    //sock.send("greetings from zwave automation");
-
-    //sock.send(JSON.stringify(myj));
-
-    
 };
 
 thingsMqttMapper.prototype.stop = function () {
     thingsMqttMapper.super_.prototype.stop.call(this);
 
     this.controller.devices.off(this.config.device, "change:metrics:level", this.handler);
-    //this.controller.devices.off(" ZWayVDev_zway_2-0-37", "change:metrics:level", this.handler);
 };
 
 // ----------------------------------------------------------------------------
