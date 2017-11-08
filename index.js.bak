@@ -33,28 +33,17 @@ thingsMqttMapper.prototype.init = function (config) {
     // Remember "this" for detached callbacks (such as event listener callbacks)
     var self = this;
 
-    // Setup Socket Interface
-    self.sock = new sockets.tcp()
-    self.sock.connect('localhost', 7777)
-
-    self.handler = function (vDev) {
+    this.handler = function (vDev) {
 	
 	if(self.config.script) {
             debugPrint("\nMQTT DEBUG, ID=", vDev.id + " - title:" + vDev.get("metrics:title") + " level:" + vDev.get("metrics:level") + " scale:" + vDev.get("metrics:scaleTitle") + "\n");
 	    try {
-		// var mycmd = "mqtt pub -t 'TOPIC' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
-		// var mycmd = "mqtt pub -t '/iotjf/evt/sensor/" + vDev.id  + "' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
+		//		var mycmd = "mqtt pub -t 'TOPIC' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
+				var mycmd = "mqtt pub -t '/iotjf/evt/sensor/" + vDev.id  + "' -h localhost -u 'apa' -P 'apapass' -i 'zwave_client_no1' -m '" + vDev.get("metrics:title") + "'" ;
+		debugPrint(mycmd);
 		//var ret = system("mqtt pub -t 'TOPIC' -h localhost -u 'apa' -P 'apapass' -m " + vDev.get("metrics:title") );
-		//var ret = "apa"; //system(mycmd);
-		var msg = {
-		    id: vDev.id,
-		    title: vDev.get("metrics:title"),
-		    level: vDev.get("metrics:level"),
-		    scale: vDev.get("metrics:scaleTitle")
-		};
-		
-		self.sock.send(JSON.stringify(msg));
-		
+		var ret = "apa"; //system(mycmd);
+		debugPrint("\n\nmqtt return: " + ret +  "\n\n");
 	    } catch(err) {
 		debugPrint("Failed to execute script system call: " + err);
 	    }
@@ -75,28 +64,6 @@ thingsMqttMapper.prototype.init = function (config) {
     // Setup metric update event listener
     this.controller.devices.on(this.config.device, "change:metrics:level", this.handler);
     //this.controller.devices.on( "ZWayVDev_zway_2-0-37", "change:metrics:level", this.handler);
-
-
-    // Socket Interface
-    //var sock = new sockets.tcp()
-    /*
-    sock.onrecv = function(data) {
-	debugPrint(data.byteLength);
-    };
-
-
-      var myj = {
-
-	m: "on"
-    }
-    */
-    //sock.connect('localhost', 7777);
-
-    //sock.send("greetings from zwave automation");
-
-    //sock.send(JSON.stringify(myj));
-
-    
 };
 
 thingsMqttMapper.prototype.stop = function () {
