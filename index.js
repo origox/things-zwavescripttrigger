@@ -15,6 +15,7 @@
 function thingsMqttMapper (id, controller) {
     // Call superconstructor first (AutomationModule)
     thingsMqttMapper.super_.call(this, id, controller);
+    this.devices = [];
 };
 
 inherits(thingsMqttMapper, AutomationModule);
@@ -33,10 +34,10 @@ thingsMqttMapper.prototype.init = function (config) {
     var self = this;
 
     // Setup Socket Interface
-    self.sock = new sockets.tcp()
-    self.sock.connect('localhost', 7777)
+    this.sock = new sockets.tcp()
+    this.sock.connect('localhost', 7777)
 
-    self.handler = function (vDev) {
+    this.handler = function (vDev) {
 	
             debugPrint("\nJF DEBUG, ID=", vDev.id + " - title:" + vDev.get("metrics:title") + " level:" + vDev.get("metrics:level") + " scale:" + vDev.get("metrics:scaleTitle") + "\n");
 	    try {
@@ -63,10 +64,12 @@ thingsMqttMapper.prototype.init = function (config) {
             storedLog.sensorData.push({"time": Date.now(), "value": vDev.get("metrics:level")});
             saveObject("JFValueLogging_" + vDev.id + "_" + self.id, storedLog);
             storedLog = null;
-      };
+    };
 
     // Setup metric update event listener
-    this.controller.devices.on(this.config.device, "change:metrics:level", this.handler);
+    this.config.devices.forEach(function(device) {
+	self.controller.devices.on(device, "change:metrics:level", self.handler);
+    });
 };
 
 thingsMqttMapper.prototype.stop = function () {
