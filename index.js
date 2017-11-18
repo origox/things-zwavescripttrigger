@@ -35,7 +35,7 @@ thingsMqttMapper.prototype.init = function (config) {
 
     // Setup Socket Interface
     this.sock = new sockets.tcp()
-    this.sock.connect('localhost', 7777)
+    this.sock.connect('localhost', 8888)
 
     this.handler = function (vDev) {
 	
