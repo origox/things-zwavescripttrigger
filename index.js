@@ -35,9 +35,32 @@ thingsMqttMapper.prototype.init = function (config) {
 
     // Setup Socket Interface
     this.sock = new sockets.tcp()
+    var isConnected = false;
+    this.sock.onclose = function (remoteHost, remotePort, localHost, localPort) {
+	debugPrint("\n\n\nONCLOSE\n\n");
+	self.isConnectd = false;
+    };
+    
+    this.sock.onconnect = function(remoteHost, remotePort, localHost, localPort) {
+	//this.close();
+	self.isConnected = true;
+	debugPrint("\n\nONCONNNNECT\n\n\n")
+    };
+
     this.sock.connect('localhost', 8888)
 
+    
+
+
+    //this.iotconnect();
+
+    
     this.handler = function (vDev) {
+
+	if(!self.isConnected) {
+	    debugPrint("\n\nself.isNotConnected\n\n")
+	    this.socket.connect('localhost', 8888)
+	}
 	
             debugPrint("\nJF DEBUG, ID=", vDev.id + " - title:" + vDev.get("metrics:title") + " level:" + vDev.get("metrics:level") + " scale:" + vDev.get("metrics:scaleTitle") + "\n");
 	    try {
@@ -47,9 +70,8 @@ thingsMqttMapper.prototype.init = function (config) {
 		    level: vDev.get("metrics:level"),
 		    scale: vDev.get("metrics:scaleTitle")
 		};
-		
+	
 		self.sock.send(JSON.stringify(msg));
-		
 	    } catch(err) {
 		debugPrint("\nJF - Failed to execute socket send: " + err);
 	    }
@@ -76,8 +98,21 @@ thingsMqttMapper.prototype.stop = function () {
     thingsMqttMapper.super_.prototype.stop.call(this);
 
     this.controller.devices.off(this.config.device, "change:metrics:level", this.handler);
+
+    this.sock.close();
 };
 
+thingsMqttMapper.prototype.iotconnect = function () {
+    this.sock.connect('localhost', 8888);
+    
+    /*debugPrint("\n\nTESTING - isConnected: " + isConnected + "\n\b");
+    
+    if(!isConnected) {
+	debugPrint("!isConnected");
+	var timerId = setTimeout(this.iotconnect(), 15000)
+    }
+    */
+}
 // ----------------------------------------------------------------------------
 // --- Module methods
 // ----------------------------------------------------------------------------
