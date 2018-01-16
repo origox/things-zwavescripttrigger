@@ -68,7 +68,8 @@ thingsMqttMapper.prototype.init = function (config) {
 		    id: vDev.id,
 		    title: vDev.get("metrics:title"),
 		    level: vDev.get("metrics:level"),
-		    scale: vDev.get("metrics:scaleTitle")
+		    scale: vDev.get("metrics:scaleTitle"),
+		    time: Date.now()
 		};
 	
 		self.sock.send(JSON.stringify(msg));
